@@ -1,6 +1,6 @@
 import rclpy
 from rclpy.node import Node
-from geometry_msgs.msg import Twist
+from geometry_msgs.msg import Vector3
 import	serial
 import	struct
 from	typing	import Final
@@ -24,7 +24,7 @@ class SimplePublisher(Node):
 
 	def __init__(self):
 		super().__init__('euler_angle_pub')
-		self.publisher_ = self.create_publisher(Twist, 'cmd_vel', 10)
+		self.publisher_ = self.create_publisher(Vector3, 'euler_angle', 10)
 
 def read_data(ser, receiver):
 	if ser.readable():
@@ -50,12 +50,12 @@ def main(args=None):
 	rclpy.init(args=args)
 	# declare the node constructor
 	simple_publisher = SimplePublisher()
-	msg = Twist()
+	msg = Vector3()
 	while rclpy.ok():
 		read_data(ser, receiver)
-		msg.angular.x = float(receiver.mean_x)
-		msg.angular.y = float(receiver.mean_y)
-		print(f"x:{msg.angular.x}, y:{msg.angular.y}")
+		msg.x = float(receiver.mean_x)
+		msg.y = float(receiver.mean_y)
+		print(f"x:{msg.x}, y:{msg.y}")
 		simple_publisher.publisher_.publish(msg)
 	# Explicity destroys the node
 	simple_publisher.destroy_node()
